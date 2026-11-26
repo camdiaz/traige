@@ -1,0 +1,15 @@
+# Credenciales locales (no subir al repo público)
+.env
+firmware/triaje_esp32cam/config.h
+.claude/settings.local.json
+
+# Versión Express anterior (reemplazada por NestJS)
+backend/server.js
+backend/public/
+
+# Node / builds
+node_modules/
+dist/
+
+# Sistema
+.DS_Store

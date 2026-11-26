@@ -1,0 +1,16 @@
+Grabar o generar (TTS) estos mensajes en español y copiarlos a la microSD
+(FAT32, ≤32 GB) dentro de la carpeta /mp3 con estos nombres exactos:
+
+/mp3/0001.mp3  Bienvenido a la estación de triaje inteligente.
+/mp3/0002.mp3  Por favor, coloque su dedo índice sobre el sensor.
+/mp3/0003.mp3  Midiendo. Por favor, no se mueva.
+/mp3/0004.mp3  Seleccione sus síntomas con la palanca y presione para marcar.
+/mp3/0005.mp3  Analizando su información con inteligencia artificial.
+/mp3/0006.mp3  Prioridad roja. Atención inmediata. Un profesional lo atenderá ya.
+/mp3/0007.mp3  Prioridad amarilla. Atención urgente. Espere a ser llamado pronto.
+/mp3/0008.mp3  Prioridad verde. No urgente. Puede esperar su turno.
+/mp3/0009.mp3  Se detectó una posible caída. Mantenga la calma, vamos a ayudarle.
+/mp3/0010.mp3  Error de conexión. Se usará la evaluación local.
+
+Consejos: MP3 mono 44.1 kHz, 128 kbps; normaliza el volumen a -1 dBFS;
+copia los archivos en orden y expulsa la tarjeta de forma segura.

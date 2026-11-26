@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Esquemático Triaje AIoT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: plano técnico, claro y preciso, como una hoja de esquema impresa.
+   IDEA: hoja de plano eléctrico con cajetín, buses coloreados y etiquetas de red.
+   PICTURE: el esquemático completo del prototipo ocupa la primera pantalla.
+   COLOUR and TYPE: fondo papel blanco / noche azul; buses por color; IBM Plex.
+   LAYOUT: título, esquema a ancho completo, luego tablas de pines y notas. */
+:root{color-scheme:light dark;
+--bg:light-dark(#ffffff,#0d1420);--ink:light-dark(#141b26,#e6ecf5);--quiet:light-dark(#5a6576,#9aa7b8);
+--line:light-dark(#c9d1dc,#2a3648);--box:light-dark(#f5f7fa,#131d2c);
+--sda:light-dark(#1f6feb,#5b9dff);--scl:light-dark(#8b3fd9,#b483ff);--v5:light-dark(#d1242f,#ff6b6b);
+--v3:light-dark(#d97706,#f5a524);--gnd:light-dark(#3b4350,#8792a2);--uart:light-dark(#1a7f37,#3fd07a);--ana:light-dark(#0e7c86,#2fc6d2)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "IBM Plex Sans",system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(24px,4vw,56px) max(4vw,16px);max-width:1340px;margin:0 auto}
+h1{font-size:clamp(28px,4vw,44px);line-height:1.05;margin:0 0 10px;text-wrap:balance}
+h2{font-size:24px;margin:40px 0 12px}
+p{max-width:72ch}.quiet{color:var(--quiet)}
+.sheet{border:1.5px solid var(--line);border-radius:10px;overflow-x:auto;background:var(--bg)}
+.sheet svg{display:block;width:100%;min-width:900px;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:8px 20px;margin:14px 0 0;font-size:14px}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.legend i{width:26px;height:4px;border-radius:2px;display:inline-block}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;color:var(--quiet);font-size:14px}
+td code,code{font-family:"IBM Plex Mono",monospace;font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:28px}
+.note{border-left:3px solid var(--v3);padding:8px 14px;background:var(--box);border-radius:0 8px 8px 0;margin:10px 0}
+.warn{border-left-color:var(--v5)}
+svg text{font-family:"IBM Plex Sans",sans-serif}
+svg .mono{font-family:"IBM Plex Mono",monospace}
+pre,.scroll{overflow-x:auto}
+@media(max-width:600px){table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:8em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:7.5em;margin-inline-start:-8em;white-space:normal;color:var(--quiet)}.stack td:empty{display:none}}
+</style>
+<script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
+</head>
+<body>
+<div class="band">
+<h1>La ESP32-CAM controla todo con cinco pines: bus I2C, un TX al DFPlayer, pulsador y LED</h1>
+<p class="quiet">Esquema base del prototipo AIoT de triaje · DevFest Cartagena 2026 · Rev. B, para ESP32-CAM AI-Thinker (módulo ESP-32S). El joystick se lee con un ADS1115 porque los pines analógicos libres (ADC2) no funcionan con el Wi-Fi activo.</p>
+
+<div class="sheet"><svg id="sch" viewBox="0 0 1300 1010" role="img" aria-label="Esquemático del prototipo de triaje AIoT con ESP32-CAM"></svg></div>
+<div class="legend">
+<span><i style="background:var(--sda)"></i>SDA (I2C)</span><span><i style="background:var(--scl)"></i>SCL (I2C)</span>
+<span><i style="background:var(--v5)"></i>5V</span><span><i style="background:var(--v3)"></i>3V3</span>
+<span><i style="background:var(--gnd)"></i>GND</span><span><i style="background:var(--uart)"></i>UART al DFPlayer</span>
+<span><i style="background:var(--ana)"></i>Joystick</span>
+</div>
+
+<h2>Conectores de la ESP32-CAM</h2>
+<p class="quiet">J1 y J2 son las tiras hembra de 1×8 donde se inserta la placa. Pin 1 de J1 = 5V; pin 1 de J2 = 3V3 (según la serigrafía de la placa).</p>
+<div class="scroll"><table class="stack">
+<thead><tr><th>J1 pin</th><th>Placa</th><th>Red</th><th>J2 pin</th><th>Placa</th><th>Red</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>5V</td><td><code>5V</code> (entrada de alimentación)</td><td>1</td><td>3V3</td><td><code>3V3</code> (salida del regulador)</td></tr>
+<tr><td>2</td><td>GND</td><td><code>GND</code></td><td>2</td><td>IO16</td><td>sin conectar (PSRAM)</td></tr>
+<tr><td>3</td><td>IO12</td><td><code>LED</code> → 330 Ω → LED → GND</td><td>3</td><td>IO0</td><td>sin conectar (cámara / arranque)</td></tr>
+<tr><td>4</td><td>IO13</td><td><code>DF_TX</code> → 1 kΩ → RX del DFPlayer</td><td>4</td><td>GND</td><td><code>GND</code></td></tr>
+<tr><td>5</td><td>IO15</td><td><code>SDA</code></td><td>5</td><td>VCC</td><td>sin conectar (es salida)</td></tr>
+<tr><td>6</td><td>IO14</td><td><code>SCL</code></td><td>6</td><td>U0R</td><td>sin conectar (programación)</td></tr>
+<tr><td>7</td><td>IO2</td><td><code>JOY_SW</code></td><td>7</td><td>U0T</td><td>sin conectar (programación)</td></tr>
+<tr><td>8</td><td>IO4</td><td>sin conectar (LED flash de la placa)</td><td>8</td><td>GND</td><td><code>GND</code></td></tr>
+</tbody></table></div>
+
+<h2>Mapa de módulos</h2>
+<div class="scroll"><table class="stack">
+<thead><tr><th>Módulo</th><th>Pines del módulo</th><th>Conexión</th><th>Notas</th></tr></thead>
+<tbody>
+<tr><td>OLED 1.5" SH1107</td><td>VCC / GND / SCL / SDA</td><td>3V3 / GND / SCL / SDA</td><td>I2C <code>0x3C</code></td></tr>
+<tr><td>MAX30102</td><td>VIN / GND / SCL / SDA</td><td>3V3 / GND / SCL / SDA</td><td>I2C <code>0x57</code>; INT sin conectar</td></tr>
+<tr><td>MPU6050</td><td>VCC / GND / SCL / SDA / AD0</td><td>3V3 / GND / SCL / SDA / GND</td><td>I2C <code>0x68</code></td></tr>
+<tr><td>ADS1115</td><td>VDD / GND / SCL / SDA / ADDR / A0 / A1</td><td>3V3 / GND / SCL / SDA / GND / VRx / VRy</td><td>I2C <code>0x48</code>; lee el joystick sin usar el ADC del ESP32</td></tr>
+<tr><td>Joystick KY-023</td><td>+5V / GND / VRx / VRy / SW</td><td>3V3 / GND / ADS A0 / ADS A1 / JOY_SW (IO2)</td><td>Alimentar a 3V3</td></tr>
+<tr><td>DFPlayer Mini</td><td>VCC / GND / RX / TX</td><td>5V / GND / DF_TX vía 1 kΩ / sin conectar</td><td>Solo recibe órdenes (9600 baud)</td></tr>
+<tr><td>Parlante 3 W 4 Ω</td><td>+ / −</td><td>SPK_1 / SPK_2</td><td>Opción B: DAC_L/R → PAM8403</td></tr>
+</tbody></table></div>
+
+<div class="grid">
+<div>
+<h2>Por qué estos pines</h2>
+<div class="note"><b>Sin microSD de la placa:</b> IO2, IO4, IO12–IO15 son de la ranura microSD; al no usarla quedan libres. El DFPlayer tiene su propia tarjeta.</div>
+<div class="note"><b>IO12 es pin de arranque:</b> debe estar en bajo al encender. El LED con resistencia a GND lo garantiza; nunca conectes ahí una señal que esté en alto al arrancar.</div>
+<div class="note"><b>DFPlayer en una sola vía:</b> el TX del DFPlayer queda en alto y bloquearía el arranque en IO12 o la programación en IO2, así que no se conecta.</div>
+<div class="note"><b>ADS1115:</b> los pines analógicos libres son del ADC2, que el ESP32 no puede usar con Wi-Fi activo.</div>
+<div class="note warn"><b>Programación:</b> usa el adaptador ESP32-CAM-MB (o un USB-serial en U0R/U0T con IO0 a GND al cargar). Mantén U0R, U0T e IO0 libres.</div>
+</div>
+<div>
+<h2>Protección y filtrado</h2>
+<div class="note"><b>C1 1000 µF / 10 V</b> entre 5V y GND junto al DFPlayer: evita que la ESP32-CAM se reinicie con los picos del parlante (la cámara + Wi-Fi ya consumen bastante).</div>
+<div class="note"><b>C2 100 µF / 10 V</b> entre 3V3 y GND junto a los sensores.</div>
+<div class="note"><b>R1 1 kΩ</b> en serie de IO13 al RX del DFPlayer.</div>
+<div class="note"><b>R2 330 Ω + LED</b> en IO12: LED de estado (fijo = rojo, dos destellos = amarillo, uno = verde).</div>
+<div class="note warn">Alimenta por el pin 5V con una fuente de 5V / 2A. El 3V3 de la placa (regulador AMS1117) alimenta sensores, OLED, ADS1115 y joystick; el DFPlayer va a 5V.</div>
+</div>
+</div>
+</div>
+
+<script>
+{
+const s=document.getElementById('sch');
+const C={sda:'var(--sda)',scl:'var(--scl)',v5:'var(--v5)',v3:'var(--v3)',gnd:'var(--gnd)',uart:'var(--uart)',ana:'var(--ana)',ink:'var(--ink)',q:'var(--quiet)',line:'var(--line)',box:'var(--box)'};
+let o='';
+const t=(x,y,str,opt={})=>{o+=`<text x="${x}" y="${y}" font-size="${opt.fs||13}" fill="${opt.c||C.ink}" text-anchor="${opt.a||'start'}" font-weight="${opt.w||400}" class="${opt.cls||''}">${str}</text>`};
+const w=(pts,c,wd=2.2,dash='')=>{o+=`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${c}" stroke-width="${wd}" stroke-linejoin="round" ${dash?`stroke-dasharray="${dash}"`:''}/>`};
+const dot=(x,y,c)=>{o+=`<circle cx="${x}" cy="${y}" r="4.5" fill="${c}"/>`};
+const box=(x,y,wd,h,title,sub,dash)=>{o+=`<rect x="${x}" y="${y}" width="${wd}" height="${h}" rx="10" fill="${C.box}" stroke="${C.ink}" stroke-width="1.4" ${dash?'stroke-dasharray="6 5"':''}/>`;t(x+14,y+24,title,{fs:15,w:600});if(sub)t(x+14,y+42,sub,{fs:11.5,c:C.q})};
+const pinR=(x,y,name)=>{o+=`<circle cx="${x}" cy="${y}" r="3" fill="${C.ink}"/>`;t(x-10,y+4,name,{a:'end',fs:12,cls:'mono'})};
+const pinL=(x,y,name)=>{o+=`<circle cx="${x}" cy="${y}" r="3" fill="${C.ink}"/>`;t(x+10,y+4,name,{fs:12,cls:'mono'})};
+const flag=(x,y,name,c,dir=1)=>{const wd=name.length*8+16;const x0=dir>0?x:x-wd;o+=`<path d="M${x0} ${y-10}h${wd}v20h${-wd}z" fill="none" stroke="${c}" stroke-width="1.6"/>`;t(x0+wd/2,y+4,name,{a:'middle',fs:11.5,c,w:600,cls:'mono'})};
+
+t(30,40,'Prototipo AIoT de Triaje Médico — Esquema base (ESP32-CAM)',{fs:18,w:600});
+t(30,62,'Bus I2C en IO15/IO14 (pull-ups ya incluidas en los módulos) · DFPlayer por IO13 · pulsador en IO2 · LED de estado en IO12',{fs:12.5,c:C.q});
+
+// ---------- ESP32-CAM ----------
+const ex=560,ey=170,ew=240,eh=440,EL=ex-25,ER=ex+ew+25;
+o+=`<rect x="${ex}" y="${ey}" width="${ew}" height="${eh}" rx="12" fill="${C.box}" stroke="${C.ink}" stroke-width="2"/>`;
+t(ex+ew/2,ey+30,'U1 · ESP32-CAM',{a:'middle',fs:16,w:600});
+t(ex+ew/2,ey+48,'AI-Thinker · ESP-32S + OV2640',{a:'middle',fs:12,c:C.q});
+t(ex+ew/2,ey+66,'J1 ←   → J2',{a:'middle',fs:11.5,w:600,c:C.q});
+const L=[[230,'1 5V'],[265,'2 GND'],[300,'3 IO12'],[335,'4 IO13'],[395,'5 IO15'],[435,'6 IO14'],[490,'7 IO2'],[525,'8 IO4']];
+L.forEach(([y,n])=>{w([[ex,y],[EL,y]],C.ink,1.6);pinL(ex,y,n)});
+const R=[[230,'3V3 1'],[265,'IO16 2'],[300,'IO0 3'],[335,'GND 4'],[370,'VCC 5'],[405,'U0R 6'],[440,'U0T 7'],[475,'GND 8']];
+R.forEach(([y,n])=>{w([[ex+ew,y],[ER,y]],C.ink,1.6);pinR(ex+ew,y,n)});
+flag(EL,230,'5V',C.v5,-1);flag(EL,265,'GND',C.gnd,-1);flag(EL,300,'LED',C.ink,-1);flag(EL,335,'DF_TX',C.uart,-1);
+flag(EL,490,'JOY_SW',C.ana,-1);t(EL-6,529,'n/c flash',{a:'end',fs:11,c:C.q});
+flag(ER,230,'3V3',C.v3,1);flag(ER,335,'GND',C.gnd,1);flag(ER,475,'GND',C.gnd,1);
+[[265,'n/c PSRAM'],[300,'n/c cámara'],[370,'n/c salida'],[405,'programación'],[440,'programación']].forEach(([y,n])=>t(ER+6,y+4,n,{fs:11,c:C.q}));
+o+=`<rect x="${ex+16}" y="550" width="${ew-32}" height="46" rx="8" fill="none" stroke="${C.line}" stroke-dasharray="4 4"/>`;
+t(ex+26,568,'Internos: cámara IO0,5,18–27,32–39',{fs:11,c:C.q});t(ex+26,586,'microSD de la placa: no se usa',{fs:11,c:C.q});
+
+// ---------- bus I2C ----------
+const SCLX=420,SDAX=445;
+w([[SCLX,170],[SCLX,605]],C.scl,2.6);w([[SDAX,190],[SDAX,625]],C.sda,2.6);
+w([[EL,395],[SDAX,395]],C.sda,2.4);dot(SDAX,395,C.sda);
+w([[EL,435],[SCLX,435]],C.scl,2.4);dot(SCLX,435,C.scl);
+t(SCLX,160,'SCL',{a:'middle',fs:12,c:C.scl,w:600,cls:'mono'});t(SDAX+14,184,'SDA',{fs:12,c:C.sda,w:600,cls:'mono'});
+
+const mx=90,mw=240,MR=mx+mw;
+const mod=(y,h,title,sub,pins)=>{box(mx,y,mw,h,title,sub);pins.forEach(([py,n,kind])=>{pinR(MR,py,n);
+ if(kind==='scl'){w([[MR,py],[SCLX,py]],C.scl,2.2);dot(SCLX,py,C.scl)}
+ else if(kind==='sda'){w([[MR,py],[SDAX,py]],C.sda,2.2);dot(SDAX,py,C.sda)}
+ else if(kind==='3v3'){w([[MR,py],[MR+22,py]],C.v3,1.8);flag(MR+22,py,'3V3',C.v3)}
+ else if(kind==='gnd'){w([[MR,py],[MR+22,py]],C.gnd,1.8);flag(MR+22,py,'GND',C.gnd)}
+ else if(kind==='nc'){t(MR+12,py+4,'n/c',{fs:11,c:C.q})}
+})};
+mod(110,110,'U2 · OLED 1.5" SH1107','128×128 · I2C 0x3C',[[130,'VCC','3v3'],[150,'GND','gnd'],[170,'SCL','scl'],[190,'SDA','sda']]);
+mod(245,130,'U3 · MAX30102','Pulso + SpO₂ · I2C 0x57',[[270,'VIN','3v3'],[290,'GND','gnd'],[310,'SCL','scl'],[330,'SDA','sda'],[350,'INT','nc']]);
+mod(390,130,'U4 · MPU6050','Acel./giro · I2C 0x68',[[410,'VCC','3v3'],[430,'GND','gnd'],[450,'SCL','scl'],[470,'SDA','sda'],[490,'AD0','gnd']]);
+mod(545,160,'U5 · ADS1115','ADC 16 bits · I2C 0x48',[[565,'VDD','3v3'],[585,'GND','gnd'],[605,'SCL','scl'],[625,'SDA','sda'],[645,'ADDR','gnd'],[665,'A0',''],[685,'A1','']]);
+// joystick
+box(mx,730,mw,160,'U6 · Joystick KY-023','2 potenciómetros + pulsador');
+[[750,'GND','gnd'],[770,'+5V*','3v3']].forEach(([py,n,k])=>{pinR(MR,py,n);w([[MR,py],[MR+22,py]],k==='gnd'?C.gnd:C.v3,1.8);flag(MR+22,py,k==='gnd'?'GND':'3V3',k==='gnd'?C.gnd:C.v3)});
+[[790,'VRx'],[810,'VRy'],[840,'SW']].forEach(([py,n])=>pinR(MR,py,n));
+w([[MR,665],[470,665],[470,790],[MR,790]],C.ana,2.2);
+w([[MR,685],[495,685],[495,810],[MR,810]],C.ana,2.2);
+t(478,730,'VRx',{fs:11,c:C.ana});t(503,760,'VRy',{fs:11,c:C.ana});
+w([[MR,840],[MR+22,840]],C.ana,1.8);flag(MR+22,840,'JOY_SW',C.ana);
+t(mx+14,880,'*alimentar a 3V3',{fs:11,c:C.q});
+
+// ---------- DFPlayer ----------
+const dx=930,dw=200;
+box(dx,560,dw,190,'U7 · DFPlayer Mini','MP3 + microSD · 9600 baud');
+[[620,'VCC'],[655,'RX'],[685,'TX'],[720,'GND']].forEach(([py,n])=>pinL(dx,py,n));
+[[620,'SPK_1'],[655,'SPK_2'],[690,'DAC_R'],[720,'DAC_L']].forEach(([py,n])=>pinR(dx+dw,py,n));
+w([[dx,620],[dx-24,620]],C.v5,1.8);flag(dx-24,620,'5V',C.v5,-1);
+w([[dx,720],[dx-24,720]],C.gnd,1.8);flag(dx-24,720,'GND',C.gnd,-1);
+t(dx-10,689,'n/c',{fs:11,c:C.q,a:'end'});
+flag(830,655,'DF_TX',C.uart,-1);w([[830,655],[848,655]],C.uart,2.2);
+o+=`<rect x="848" y="646" width="46" height="18" rx="3" fill="${C.box}" stroke="${C.uart}" stroke-width="2"/>`;
+t(871,682,'R1 1 kΩ',{a:'middle',fs:11.5,c:C.uart,w:600});
+w([[894,655],[dx,655]],C.uart,2.2);
+// speaker
+const sx=1200;
+w([[dx+dw,620],[sx,620]],C.ink,1.8);w([[dx+dw,655],[1170,655],[1170,660],[sx,660]],C.ink,1.8);
+o+=`<rect x="${sx}" y="610" width="22" height="60" fill="${C.box}" stroke="${C.ink}" stroke-width="1.6"/><path d="M${sx+22} 610 L${sx+56} 584 V696 L${sx+22} 670 Z" fill="${C.box}" stroke="${C.ink}" stroke-width="1.6"/>`;
+t(sx+28,572,'LS1 · 3 W 4 Ω',{a:'middle',fs:12.5,w:600});
+t(dx,780,'Opción B: DAC_L/R → PAM8403 (5V) → LS1',{fs:11.5,c:C.q});
+
+// ---------- alimentación ----------
+o+=`<line x1="30" y1="905" x2="1270" y2="905" stroke="${C.line}" stroke-width="1.2" stroke-dasharray="3 5"/>`;
+t(560,800,'Alimentación y protección',{fs:15,w:600});
+box(560,815,230,70,'J3 · Entrada 5V','USB-C / power bank 5V 2A');
+w([[790,835],[815,835]],C.v5,2);flag(815,835,'5V',C.v5);
+w([[790,865],[815,865]],C.gnd,2);flag(815,865,'GND',C.gnd);
+const cap=(x,y0,top,label,sub,c)=>{flag(x,y0,top,c,1);const cx=x+(top.length*8+16)/2;
+ w([[cx,y0+10],[cx,y0+30]],c,2);o+=`<line x1="${cx-14}" y1="${y0+30}" x2="${cx+14}" y2="${y0+30}" stroke="${C.ink}" stroke-width="2.5"/>`;
+ o+=`<path d="M${cx-14} ${y0+42} Q${cx} ${y0+33} ${cx+14} ${y0+42}" fill="none" stroke="${C.ink}" stroke-width="2.5"/>`;
+ t(cx-18,y0+27,'+',{fs:13,a:'end',w:600});w([[cx,y0+40],[cx,y0+56]],C.gnd,2);flag(cx-20,y0+66,'GND',C.gnd);
+ t(cx+22,y0+34,label,{fs:13,w:600});t(cx+22,y0+50,sub,{fs:11.5,c:C.q})};
+cap(130,925,'5V','C1 1000 µF','10 V · junto a U7',C.v5);
+cap(380,925,'3V3','C2 100 µF','10 V · junto a U2–U5',C.v3);
+// LED de estado
+flag(640,935,'LED',C.ink);w([[680,935],[700,935]],C.ink,2);
+o+=`<rect x="700" y="926" width="40" height="18" rx="3" fill="${C.box}" stroke="${C.ink}" stroke-width="1.8"/>`;
+t(720,920,'R2 330 Ω',{a:'middle',fs:11.5,w:600});
+w([[740,935],[770,935]],C.ink,2);
+o+=`<path d="M770 923 V947 L790 935 Z" fill="${C.v5}" fill-opacity=".25" stroke="${C.ink}" stroke-width="1.8"/><line x1="790" y1="923" x2="790" y2="947" stroke="${C.ink}" stroke-width="2"/>`;
+t(780,968,'D1 LED estado',{a:'middle',fs:12,w:600});
+w([[790,935],[815,935]],C.gnd,2);flag(815,935,'GND',C.gnd);
+t(930,930,'Etiquetas iguales = misma red',{fs:12,c:C.q});
+t(930,950,'Tierras unidas en un punto',{fs:12,c:C.q});
+t(930,970,'Programar con ESP32-CAM-MB',{fs:12,c:C.q});
+s.innerHTML=o;
+}
+</script>
+</body>
+</html>
